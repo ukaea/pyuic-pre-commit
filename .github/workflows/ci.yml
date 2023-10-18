@@ -1,0 +1,38 @@
+name: pyuic-pre-commit_ci
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  unit-test:
+
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.10", "3.11"]
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-poetry
+      - name: Run unit tests
+        run: |
+          poetry install --only=test
+          poetry run pytest
+
+  quality:
+
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.10", "3.11"]
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-poetry
+      - name: Run quality checks
+        run: |
+          poetry install --only=dev
+          poetry run pre-commit run --all-files --show-diff-on-failure
