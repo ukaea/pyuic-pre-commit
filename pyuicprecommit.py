@@ -40,7 +40,7 @@ def main(argv: list[str]) -> int:
         out = run_uic(uic_exe, ui_file)
         if out != target_file.read_text():
             print(
-                f"Python file '{target_file}' out of data with '{ui_file}'",
+                f"Python file '{target_file}' out of date with '{ui_file}'",
                 file=sys.stderr,
             )
             exit_code = 1
