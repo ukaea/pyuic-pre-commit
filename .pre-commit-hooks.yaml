@@ -1,0 +1,6 @@
+- id: check-ui-files
+  name: check-ui-files
+  description: check that generated PySide ui files are up-to-date
+  entry: pyuic-pre-commit
+  language: python
+  files: .*\.ui$
