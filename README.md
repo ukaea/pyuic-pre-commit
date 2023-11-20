@@ -3,13 +3,15 @@
 A [pre-commit](https://pre-commit.com/) hook to run PyQt/PySide's `pyuic` tool
 and ensure generated Python files are up-to-date with their `.ui` files.
 
+Supports Python versions 3.8 - 3.12.
+
 ## Usage
 
 Add the following to your `.pre-commit-config.yaml`:
 
 ```yaml
 - repo: https://github.com/ukaea/pyuic-pre-commit.git
-    rev: v0.1.0  # change to your desired version
+    rev: v0.1.1
     hooks:
       - id: check-ui-files
         args: ['--exe-name', 'pyside6-uic']  # optional
