@@ -21,3 +21,8 @@ repos:
     hooks:
       - id: mypy
         args: ['--ignore-missing', '--python-version', '3.12']
+
+  - repo: https://github.com/pre-commit/pre-commit
+    rev: v4.2.0
+    hooks:
+      - id: validate_manifest
