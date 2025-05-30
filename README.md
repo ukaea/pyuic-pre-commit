@@ -3,7 +3,7 @@
 A [pre-commit](https://pre-commit.com/) hook to run PyQt/PySide's `pyuic` tool
 and ensure generated Python files are up-to-date with their `.ui` files.
 
-Supports Python versions 3.8 - 3.12.
+Supports Python versions 3.9 - 3.13.
 
 ## Usage
 
