@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pyuicprecommit"
-version = "0.1.0"
+version = "0.2.0"
 description = "Pre-commit hook to validate Qt UI files have been generated using pyuic"
 authors = ["hsaunders1904"]
 readme = "README.md"

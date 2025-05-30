@@ -11,7 +11,7 @@ Add the following to your `.pre-commit-config.yaml`:
 
 ```yaml
 - repo: https://github.com/ukaea/pyuic-pre-commit.git
-    rev: v0.1.1
+    rev: v0.2.0
     hooks:
       - id: check-ui-files
         args: ['--exe-name', 'pyside6-uic', '--pattern', 'ui_{}.py']  # optional
