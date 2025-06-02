@@ -89,6 +89,8 @@ def make_shadow_repo(
 
 
 def _repo_ref(tmpdir: Path, repo: str, ref: str) -> tuple[str, str]:
+    # If there are no changes on the hook repo, we do not need to create
+    # a clone.
     if not git.has_diff("HEAD", repo=repo):
         return repo, ref
 

@@ -85,7 +85,7 @@ def test_hook_finds_ui_file_using_non_default_pattern(
     temp_repo.git.add(str(repo_dir / "ui" / "window.ui"))
 
     with working_directory(repo_dir):
-        ref = str(git.Repo(ROOT_DIR).head.ref)
+        ref = str(git.Repo(ROOT_DIR).rev_parse("HEAD"))
         config_path = make_shadow_repo(
             tmp_path,
             ROOT_DIR,
