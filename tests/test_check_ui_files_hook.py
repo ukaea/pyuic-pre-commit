@@ -8,6 +8,8 @@ import git
 import pytest
 from pre_commit.main import main as pre_commit_main
 
+from tests.try_repo import make_shadow_repo
+
 DATA_DIR = Path(__file__).parent / "data"
 ROOT_DIR = Path(__file__).parent.parent
 HOOK_NAME = "check-ui-files"
@@ -69,5 +71,28 @@ def test_hook_successful_given_py_file_present(temp_repo: git.Repo):
 
     with working_directory(repo_dir):
         result = pre_commit_main(["try-repo", str(ROOT_DIR), HOOK_NAME])
+
+    assert result == 0
+
+
+def test_hook_finds_ui_file_using_non_default_pattern(
+    temp_repo: git.Repo, tmp_path: Path
+):
+    repo_dir = Path(temp_repo.git_dir).parent
+    (repo_dir / "ui").mkdir()
+    shutil.copyfile(DATA_DIR / "window.ui", repo_dir / "ui" / "window.ui")
+    shutil.copyfile(DATA_DIR / "ui_window.py", repo_dir / "window.py")
+    temp_repo.git.add(str(repo_dir / "ui" / "window.ui"))
+
+    with working_directory(repo_dir):
+        ref = str(git.Repo(ROOT_DIR).rev_parse("HEAD"))
+        config_path = make_shadow_repo(
+            tmp_path,
+            ROOT_DIR,
+            HOOK_NAME,
+            ["--pattern", "../{}.py"],
+            ref=ref,
+        )
+        result = pre_commit_main(["run", "--all-files", "--config", str(config_path)])
 
     assert result == 0

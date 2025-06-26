@@ -9,6 +9,8 @@ import sys
 from dataclasses import dataclass
 from pathlib import Path
 
+UI_TO_PY_PATTERN = r"ui_{}.py"
+
 
 @dataclass
 class Args:
@@ -16,6 +18,7 @@ class Args:
 
     files: list[Path]
     exe_name: str
+    pattern: str
 
 
 def main_with_exit():
@@ -32,9 +35,13 @@ def main(argv: list[str]) -> int:
 
     exit_code = 0
     for ui_file in args.files:
-        target_file = Path(ui_file.parent / f"ui_{ui_file.stem}.py")
+        if not (target_file := target_file_path(ui_file, args.pattern)):
+            return 1
         if not target_file.is_file():
-            print(f"no Python file found for ui file '{ui_file}'", file=sys.stderr)
+            print(
+                f"no Python file '{target_file}' found for ui file '{ui_file}'",
+                file=sys.stderr,
+            )
             exit_code = 1
             continue
         out = run_uic(uic_exe, ui_file)
@@ -62,6 +69,17 @@ def parse_args(argv: list[str]) -> Args:
         type=str,
         help="the name of the uic executable to use",
     )
+    parser.add_argument(
+        "--pattern",
+        default=UI_TO_PY_PATTERN,
+        type=lambda s: str(s).strip("\"'"),
+        help=(
+            r"the pattern used to match ui files to Python files. The '{}' is replaced "
+            "with the name of the .ui file, without the extension. This can be a path "
+            "relative to the ui file. For OS compatibility, prefer '/' as a path "
+            f"separator [default: {UI_TO_PY_PATTERN}]"
+        ),
+    )
     return Args(**vars(parser.parse_args(argv)))
 
 
@@ -70,6 +88,20 @@ def find_uic_exe(cli_exe: str) -> Path | None:
     if exe := shutil.which(cli_exe):
         return Path(exe)
     return None
+
+
+def target_file_path(ui_file: Path, pattern: str) -> Path | None:
+    """
+    Return the path to the target Python file.
+
+    Return None and print an error message if the pattern is not valid.
+    """
+    try:
+        formatted_pattern = pattern.format(ui_file.stem)
+    except Exception as exc:
+        print(f"invalid pattern '{pattern}': {exc}", file=sys.stderr)
+        return None
+    return Path(ui_file.parent / formatted_pattern).resolve().relative_to(Path.cwd())
 
 
 def run_uic(uic_exe: Path, ui_file: Path) -> str:

@@ -3,7 +3,7 @@
 A [pre-commit](https://pre-commit.com/) hook to run PyQt/PySide's `pyuic` tool
 and ensure generated Python files are up-to-date with their `.ui` files.
 
-Supports Python versions 3.8 - 3.12.
+Supports Python versions 3.9 - 3.13.
 
 ## Usage
 
@@ -11,10 +11,10 @@ Add the following to your `.pre-commit-config.yaml`:
 
 ```yaml
 - repo: https://github.com/ukaea/pyuic-pre-commit.git
-    rev: v0.1.1
+    rev: v0.2.0
     hooks:
       - id: check-ui-files
-        args: ['--exe-name', 'pyside6-uic']  # optional
+        args: ['--exe-name', 'pyside6-uic', '--pattern', 'ui_{}.py']  # optional
 ```
 
 You **must** have a `pyuic` tool available and on your path.
@@ -26,26 +26,22 @@ For example, if you're using PyQt5:
         args: ['--exe-name', 'pyuic5']
 ```
 
-## Assumptions
+### File Matching Patterns
 
-This hook assumes that each `.ui` and generated Python file pair are
-located in the same directory and have a consistent naming pattern.
-The generated Python file must have the same name as the `.ui` file
-with a `ui_` prefix.
+By default, this hook will look for generated Python files
+using the pattern `ui_{}.py`,
+where `{}` is replaced with the stem of the `.ui` file's name.
+For example, given some `.ui` file `src/mygui/mainwindow.ui`,
+the hook will look for a generated python file `src/mygui/ui_mainwindow.py`.
 
-For example, the following is OK:
+You can change the pattern used by passing
+`--pattern <mypattern>` into the hook's config.
+The pattern may be a relative path,
+but it must contain exactly one '`{}`'.
+For example, suppose you have a `.ui` file `src/mygui/ui/mainwindow.ui`,
+and a corresponding `uic` generated Python file `src/mygui/mainwindow.py`,
+you would use:
 
-```text
-module/widget.ui -> module/ui_widget.py
+```yaml
+        args: ['--pattern', '../{}.py']
 ```
-
-But these examples are not:
-
-```text
-module/ui/widget.ui -> module/ui_widget.py
-module/widget.ui -> module/widget.py
-```
-
-> *Note:
-> If you have requirements that are not supported by these assumptions,
-> please let the hook authors know and they can try to help.*
